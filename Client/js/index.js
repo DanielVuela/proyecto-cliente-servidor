@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function(){
             //Enviar la solicitud al servidor:
             const response = await fetch('backend/login.php',{
                 method: 'POST',
-                header: {
+                headers: {
                     'Content-Type':'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams({email: email, password: password})
@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function(){
             const result = response.json();
 
             if(response.ok){
-                //login exitoso, redirigir el usuario a el dashboard
-                window.location.href = "index.html";
+                //redirigir el usuario a el dashboard
+                window.location.href = "/Client/index.html";
             }else{
                 loginError.style.display = 'block';
                 loginError.textContent = result.error || 'Invalid username/password';
