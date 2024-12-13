@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
             if(response.ok){
                 //redirigir el usuario a el dashboard
-                window.location.href = "/Client/index.html";
+                window.location.href =  "/Client/index.html";
             }else{
                 loginError.style.display = 'block';
                 loginError.textContent = result.error || 'Invalid username/password';
