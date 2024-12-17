@@ -63,6 +63,20 @@ function obtenerProductos()
     }
 }
 
+function obtenerproductoById($id)
+{
+    global $pdo;
+    try {
+        $sql = "Select * from products where id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        logError("Error al obtener producto: " . $e->getMessage());
+        return [];
+    }
+}
+
 function eliminarProducto($id)
 {
     global $pdo;
@@ -96,9 +110,28 @@ if (isset($_SESSION['user_id'])) {
     logDebug($user_id);
 switch ($method) {
     case 'GET':
+
+    // Verificar si se envió el parámetro 'id'
+    if (isset($_GET['id'])) {
+        $productId = intval($_GET['id']);
+
+        // Llamar a la función para obtener el producto por ID
+        $producto = obtenerProductoById($productId);
+
+        if ($producto) {
+            http_response_code(200);
+            echo json_encode($producto); // Retornar el primer producto encontrado
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Producto no encontrado"]);
+        }
+    } else {
         $productos = obtenerProductos();
         echo json_encode($productos);
+    }
+        
         break;
+        
 
     case 'POST':
         $input = getJsonInput();
@@ -160,3 +193,5 @@ switch ($method) {
     http_response_code(401);
     echo json_encode(["error" => "Sesion no activa"]);
 }
+
+

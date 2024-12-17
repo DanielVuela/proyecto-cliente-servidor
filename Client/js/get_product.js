@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const products = await response.json();
-                console.log(products);
+              //  console.log(products);
 
                 renderProducts(products);
             } else {
@@ -33,11 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderProducts(products) {
         // Renderiza los productos en el DOM
         const productList = document.getElementById('product-list');
-console.log(productList);
-      /*   if (!productList) {
+        //console.log(productList);
+         if (!productList) {
             console.error('Elemento con id "product-list" no encontrado.');
             return;
-        } */
+        } 
         
         productList.innerHTML = ''; // Limpia el contenido existente
     
@@ -56,16 +56,78 @@ console.log(productList);
                         <p class="card-text"><strong>Stock:</strong> $${product.stock || '0'}</p>
                     </div>
                     <div class="card-footer d-flex justify-content-between">
-                        <button class="btn btn-success btn-xl add-product" data-id="${product.id}">Agregar</button>
+                        <button class="btn btn-success btn-xl">Agregar</button>
+
                     </div>
                 </div>
             `;
     
             productList.appendChild(productCard);
+
+              // Asignar el evento al botón "Agregar"
+        const button = productCard.querySelector('button');
+        button.addEventListener('click', () => {
+            viewProduct(product.id);  // Llama a viewProduct con el ID del producto
+        });
         });
     }
+
+    function viewProduct(productId) {
+    //    window.location.href = `product.php?id=${productId}`; // Redirige a la página product.php con el ID del producto
+         // Abre la página del producto en una nueva pestaña
+         window.open(`/src/productos/get_product.html?id=${productId}`, '_blank');
+        }
     
     loadProducts();
 
 });
  
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');  // Obtiene el ID del producto desde la URL
+    if (!productId) {
+        console.error('No se proporcionó un ID de producto.');
+        return;
+    }
+
+    const apiUrl = `http://localhost:3000/backend/products.php?id=${productId}`;
+
+    async function fetchProduct() {
+        try {
+            const response = await fetch(apiUrl);
+
+            if (response.ok) {
+                const product = await response.json();
+                renderProduct(product);
+            } else if (response.status === 404) {
+                console.error('Producto no encontrado.');
+                renderError('Producto no encontrado.');
+            } else {
+                console.error(`Error al cargar el producto: ${response.status}`);
+                renderError('Error al cargar el producto.');
+            }
+        } catch (error) {
+            console.error('Error de red:', error.message);
+            renderError('Error de red. Intente más tarde.');
+        }
+    }
+
+    function renderProduct(product) {
+        // Rellena los elementos con los datos del producto
+        document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-description').textContent = product.description;
+        document.getElementById('product-price').textContent = `$${product.price}`;
+        document.getElementById('product-stock').textContent = `${product.stock} unidades`;
+        const productImage = document.getElementById('product-image');
+        productImage.src = product.image_url;
+        productImage.alt = product.name;
+    }
+
+    function renderError(message) {
+        const container = document.querySelector('.container');
+        container.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+    }
+
+    fetchProduct();
+});
