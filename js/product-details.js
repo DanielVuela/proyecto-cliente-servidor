@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 if (response.status === 401) {
                     // Redirigir a la página de inicio si no está autorizado
-                    window.location.href = '/Client/index.html';
+                    window.location.href = '/index.html';
                 } else {
                     console.error(`Error al obtener productos: ${response.status}`);
                 }
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function viewProduct(productId) {
         //    window.location.href = `product.php?id=${productId}`; // Redirige a la página product.php con el ID del producto
         // Abre la página del producto en una nueva pestaña
-        window.open(`/src/productos/get_product.html?id=${productId}`, '_blank');
+        window.open(`/product-details.html?id=${productId}`, '_blank');
     }
 
     loadProducts();
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('add-to-cart-btn').addEventListener('click', async (event) => {
         event.preventDefault();
         const button = event.target;
-        if(wasSubmit) return;
+        if (wasSubmit) return;
 
         const response = await fetch('http://localhost:3000/backend/cart-item.php', {
             method: 'POST',
@@ -146,7 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(result);
         if (response.ok) {
             wasSubmit = true;
-            button.textContent  = "Thanks :)"
+            button.textContent = "Thanks :)"
+            // TODO: alerts
+            // TODO: counter
         } else {
             alert("Item no se pudo agregar"); // error 500
             // loginError.style.display = 'block';
