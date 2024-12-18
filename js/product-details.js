@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.ok) {
             wasSubmit = true;
             button.textContent = "Thanks :)"
+            if(window.refreshCartCount) window.refreshCartCount();
             // TODO: alerts
             // TODO: counter
         } else {
