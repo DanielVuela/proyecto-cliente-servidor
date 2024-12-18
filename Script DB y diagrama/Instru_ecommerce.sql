@@ -96,7 +96,7 @@ INSERT INTO products (name, description, price, stock, image_url, category_id) V
 
 INSERT INTO users (username, password, email) VALUES
 ('ADMIN	', 'password123', 'ADMIN@gmail.com'),
-('user', 'user134', 'user@gmail.com'),
+('user', 'user134', 'user@gmail.com');
 
 
 INSERT INTO cart (user_id, product_id, quantity) VALUES
@@ -115,4 +115,31 @@ INSERT INTO invoice_details (invoice_id, product_id, quantity, subtotal) VALUES
 (1, 1, 1, 150.00),
 (2, 4, 2, 1200.00);
 
+---- user for the app
+CREATE USER 'tienda_user'@'%' IDENTIFIED BY 'musica';
+GRANT ALL PRIVILEGES ON Instru_ecommerce.* TO 'tienda_user'@'%';
+FLUSH PRIVILEGES;
 
+
+
+------------ correr esto luego de todo lo anterior -------------------
+
+-- Crear la tabla cart_item como tabla intermedia
+CREATE TABLE cart_item (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cart_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- Eliminar la columna product_id y quantity de la tabla cart
+ALTER TABLE cart DROP FOREIGN KEY `cart_ibfk_2`;
+
+ALTER TABLE cart
+DROP COLUMN product_id,
+DROP COLUMN quantity;

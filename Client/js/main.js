@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("Página cargada correctamente.");
     updateCartCount();
 
-    const addToCartButtons = document.querySelectorAll(".add-to-cart");
+    const addToCartButtons = document.querySelectorAll("#add-to-cart");
     addToCartButtons.forEach(button => {
         button.addEventListener("click", function(event) {
             event.preventDefault();
