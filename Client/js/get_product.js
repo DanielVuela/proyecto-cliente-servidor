@@ -10,11 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'GET',
                 credentials: 'include'
             });
-            console.error('mensaje:',response);
+            console.error('mensaje:', response);
 
             if (response.ok) {
                 const products = await response.json();
-              //  console.log(products);
+                //  console.log(products);
 
                 renderProducts(products);
             } else {
@@ -34,15 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Renderiza los productos en el DOM
         const productList = document.getElementById('product-list');
         //console.log(productList);
-         if (!productList) {
+        if (!productList) {
             console.error('Elemento con id "product-list" no encontrado.');
             return;
-        } 
-        
+        }
+
         productList.innerHTML = ''; // Limpia el contenido existente
-    
+
         products.forEach(product => {
-  
+
             // Crear el card del producto
             const productCard = document.createElement('div');
             productCard.className = 'col-md-4 mb-3';
@@ -61,37 +61,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-    
+
             productList.appendChild(productCard);
 
-              // Asignar el evento al botón "Agregar"
-        const button = productCard.querySelector('button');
-        button.addEventListener('click', () => {
-            viewProduct(product.id);  // Llama a viewProduct con el ID del producto
-        });
+            // Asignar el evento al botón "Agregar"
+            const button = productCard.querySelector('button');
+            button.addEventListener('click', () => {
+                viewProduct(product.id);  // Llama a viewProduct con el ID del producto
+            });
         });
     }
 
     function viewProduct(productId) {
-    //    window.location.href = `product.php?id=${productId}`; // Redirige a la página product.php con el ID del producto
-         // Abre la página del producto en una nueva pestaña
-         window.open(`/src/productos/get_product.html?id=${productId}`, '_blank');
-        }
-    
+        //    window.location.href = `product.php?id=${productId}`; // Redirige a la página product.php con el ID del producto
+        // Abre la página del producto en una nueva pestaña
+        window.open(`/src/productos/get_product.html?id=${productId}`, '_blank');
+    }
+
     loadProducts();
 
 });
- 
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');  // Obtiene el ID del producto desde la URL
+    const apiUrl = `http://localhost:3000/backend/products.php?id=${productId}`;
+    let wasSubmit = false;
     if (!productId) {
         console.error('No se proporcionó un ID de producto.');
         return;
     }
-
-    const apiUrl = `http://localhost:3000/backend/products.php?id=${productId}`;
 
     async function fetchProduct() {
         try {
@@ -128,6 +128,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.querySelector('.container');
         container.innerHTML = `<div class="alert alert-danger">${message}</div>`;
     }
+
+    document.getElementById('add-to-cart-btn').addEventListener('click', async (event) => {
+        event.preventDefault();
+        const button = event.target;
+        if(wasSubmit) return;
+
+        const response = await fetch('http://localhost:3000/backend/cart-item.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({ productId, quantity: 1 }) // always create it with one
+        });
+
+        const result = await response.json();
+        console.log(result);
+        if (response.ok) {
+            wasSubmit = true;
+            button.textContent  = "Thanks :)"
+        } else {
+            alert("Item no se pudo agregar"); // error 500
+            // loginError.style.display = 'block';
+            // loginError.textContent = result.error || 'Invalid username/password';
+        }
+    });
 
     fetchProduct();
 });
