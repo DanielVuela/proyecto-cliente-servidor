@@ -149,7 +149,7 @@ if (isset($_SESSION['user_id'])) {
     case 'POST':
       $cart_id = $_POST['cart_id'];
       if (isset($cart_id)) {
-        $result = checkout($cart_id, $user_id);
+        $result = checkout($cart_id, $_SESSION['user_id']);
         echo json_encode($result);
       } else {
         http_response_code(400);

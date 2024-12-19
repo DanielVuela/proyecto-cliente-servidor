@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
   fetch('components/nav-bar.html')
-    .then(response => response.text())  // Convierte la respuesta en texto
+    .then(response => response.text())  
     .then(html => {
-      document.getElementById('header-container').innerHTML = html;  // Inserta el contenido en el contenedor
-       // Verifica la sesión y actualiza el botón de historial
+      document.getElementById('header-container').innerHTML = html;  
+
        checkSession();
     })
     .catch(error => {
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       const data = await response.json();
       const historyButton = document.querySelector('.history');
-      const loginButton = document.querySelector('.history#login'); // Botón "Iniciar Sesión"
+      const loginButton = document.querySelector('.history#login');
 
       if (data.sessionActive) {
         historyButton.style.display = 'block'; // Muestra el botón
