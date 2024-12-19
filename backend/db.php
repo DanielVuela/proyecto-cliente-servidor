@@ -4,11 +4,11 @@ require "message_log.php";
 // $host = getenv('DB_HOST') !== false ? getenv('DB_HOST') : 'localhost';
 // $dbname = getenv('DB_NAME') !== false ? getenv('DB_NAME') : 'tienda';
 
- $host = getenv(name: 'DB_HOST') !== false ? getenv('DB_HOST') : '127.0.0.1';
+ $host = getenv(name: 'DB_HOST') !== false ? getenv('DB_HOST') : '127.0.0.1:33091'; //jurgem
  $dbname = getenv('DB_NAME') !== false ? getenv('DB_NAME') : 'Instru_ecommerce';
 
-$user = getenv('DB_USER') !== false ? getenv('DB_USER') : 'root';
-$password = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : '1234';
+$user = getenv('DB_USER') !== false ? getenv('DB_USER') : 'tienda_user';
+$password = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : 'musica';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $password);
