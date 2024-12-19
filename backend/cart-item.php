@@ -1,6 +1,6 @@
 <?php
 
-require 'db.php';
+require_once 'db.php';
 require_once 'cart.php';
 require_once "message_log.php";
 
@@ -92,7 +92,6 @@ if (isset($_SESSION['user_id'])) {
       break;
 
     case 'POST':
-      logDebug(message: "here " . $_POST['productId'] . " " .  $_POST['quantity']);
       if (isset($_POST['productId'], $_POST['quantity'])) {
         logDebug(message: "here " . $_POST['productId'] . " " .  $_POST['quantity']);
         $carrito = obtenerCarritoPorUsuario($user_id);
