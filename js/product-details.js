@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const productList = document.getElementById('product-list');
     const API_URL = 'backend/products.php';
-    const url = 'http://localhost:8000/backend/products.php'; // Ajusta esta ruta
+    const url = 'http://localhost:3000/backend/products.php'; // Ajusta esta ruta
 
     async function loadProducts() {
         // Función para obtener los productos del servidor
