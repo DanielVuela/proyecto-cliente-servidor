@@ -34,11 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (response.ok) {
           //todo exitoso
           registerError.innerHTML = `<div class="alert alert-success fade show" role="alert">
-                                                <strong>Success:</strong> Email: ${email} successfully registered.
+                                                <strong>Success:</strong> Email: ${email} registrado correctamente.
                                             </div>`;
           setTimeout(function () {
             registerError.innerHTML = "";
-            window.location.href = "index.html";
+            window.location.href = "login.html";
           }, 5000)
         } else {
           registerError.innerHTML = `<div class="alert alert-danger fade show" role="alert">
