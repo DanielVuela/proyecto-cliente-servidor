@@ -122,6 +122,75 @@ document.addEventListener('DOMContentLoaded', () => {
         const productImage = document.getElementById('product-image');
         productImage.src = product.image_url;
         productImage.alt = product.name;
+
+
+            // input para seleccionar la cantidad
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.min = 1;
+            quantityInput.max = product.stock;
+            quantityInput.value = 1;
+            quantityInput.id = 'quantity';
+            document.getElementById('quantityData').appendChild(quantityInput);
+
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
+            addToCartBtn.addEventListener('click', async (event) => {
+                event.preventDefault();
+                const button = event.target;
+                if (wasSubmit) return;
+
+                const quantity = parseInt(quantityInput.value);
+                  console.log("quantity:",quantity);  
+                if (quantity < 1 || quantity > product.stock) {
+                    alert(`Por favor, selecciona una cantidad entre 1 y ${product.stock}.`);
+                    return;
+                }
+        
+                const response = await fetch('http://localhost:3000/backend/cart-item.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ productId, quantity }),
+                });
+        
+                const result = await response.json();
+                if (response.ok) {
+                    wasSubmit = true;
+                    button.textContent = "Thanks :)"
+                    renderSuccess("Producto Agregado al carrito.");
+
+                    if(window.refreshCartCount) window.refreshCartCount();
+                } else {
+                    container.innerHTML = `<div class="alert alert-danger">Item no se pudo agregar</div>`;
+                }
+            });
+        
+    }
+
+    async function  renderSuccess(message)  {
+        // Selecciona el contenedor donde se mostrará el mensaje
+        const container = document.querySelector('.container');
+    
+        // Crea un elemento `div` con el mensaje
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+    
+        // Agrega el mensaje al contenedor
+        container.appendChild(alertDiv);
+     //   await renderCart(); // Recargar el carrito después de eliminar el producto
+     //   await   window.refreshCartCount();
+        // Elimina la notificación automáticamente después de 3 segundos
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            alertDiv.classList.add('hide');
+            setTimeout(() => alertDiv.remove(), 500); // Elimina el elemento del DOM
+        }, 3000);
     }
 
     function renderError(message) {
@@ -129,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = `<div class="alert alert-danger">${message}</div>`;
     }
 
-    document.getElementById('add-to-cart-btn').addEventListener('click', async (event) => {
+  /*   document.getElementById('add-to-cart-btn').addEventListener('click', async (event) => {
         event.preventDefault();
         const button = event.target;
         if (wasSubmit) return;
@@ -141,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: new URLSearchParams({ productId, quantity: 1 }) // always create it with one
         });
-
+ 
         const result = await response.json();
         console.log(result); 
         if (response.ok) {
@@ -157,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // loginError.style.display = 'block';
             // loginError.textContent = result.error || 'Invalid username/password';
         }
-    });
+    }); */
 
     fetchProduct();
 });

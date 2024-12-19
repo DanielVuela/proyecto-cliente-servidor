@@ -45,11 +45,11 @@ function obtenerItemsDelCarrito($cart_id)
         p.id AS product_id,
         p.name AS product_name,
         p.description AS product_description,
-        p.price AS product_price,
+        sum(ci.quantity * p.price) AS product_price,
         p.image_url AS product_image
       FROM cart_item ci
       JOIN products p ON ci.product_id = p.id
-      WHERE ci.cart_id = :cart_id
+      WHERE ci.cart_id = :cart_id GROUP BY ci.id
     ";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(params: ['cart_id' => $cart_id]);
