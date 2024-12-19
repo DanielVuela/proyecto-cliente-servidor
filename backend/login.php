@@ -15,7 +15,7 @@ function login($username, $password){
 
         if ($user) {
             if (password_verify($password, $user['password'])) {
-                session_regenerate_id(true); // Seguridad adicional
+                session_regenerate_id(true); // seguridad adicional
                 $_SESSION['user_id'] = $user["id"];
                 return true;
             }

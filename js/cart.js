@@ -25,10 +25,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id }) // en json se envia el id
+        body: JSON.stringify({ id })
       });
       if (response.ok) {
-        await renderCart(); // Recargar el carrito después de eliminar el producto
+        await renderCart();
         await window.refreshCartCount();
         renderSuccess("Producto eliminado del carrito.");
 
@@ -138,10 +138,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   async function renderSuccess(message) {
-    // Selecciona el contenedor donde se mostrará el mensaje
     const container = document.querySelector('.container');
 
-    // Crea un elemento `div` con el mensaje
     const alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-danger alert-dismissible fade show';
     alertDiv.role = 'alert';
@@ -150,13 +148,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
 
-    // Agrega el mensaje al contenedor
     container.appendChild(alertDiv);
-    // Elimina la notificación automáticamente después de 3 segundos
+
     setTimeout(() => {
       alertDiv.classList.remove('show');
       alertDiv.classList.add('hide');
-      setTimeout(() => alertDiv.remove(), 500); // Elimina el elemento del DOM
+      setTimeout(() => alertDiv.remove(), 500);
     }, 3000);
   }
 
@@ -170,6 +167,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     if (response.ok) {
       const result = await response.json();
+      window.location.href = '/purchase-history.html';
       console.log(result);
     } else {
       // TODO: hacer esto bonito

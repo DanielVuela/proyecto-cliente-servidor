@@ -19,7 +19,7 @@ function userRegistry($username, $password, $email)
     }
 }
 
-// Validar entorno (web o CLI)
+// validar entorno (web o CLI)
 if (PHP_SAPI === 'cli') {
     echo "[ERROR] Este script debe ejecutarse en un entorno web.\n";
     exit;

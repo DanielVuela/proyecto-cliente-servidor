@@ -43,7 +43,7 @@ function editarProducto($id, $name, $description, $price, $stock, $image_url)
     }
 }
 
-// Validar entorno (web o CLI)
+// validar entorno (web o CLI)
 if (PHP_SAPI === 'cli') {
     echo "[ERROR] Este script debe ejecutarse en un entorno web.\n";
     exit;
@@ -111,16 +111,14 @@ if (isset($_SESSION['user_id'])) {
 switch ($method) {
     case 'GET':
 
-    // Verificar si se envió el parámetro 'id'
     if (isset($_GET['id'])) {
         $productId = intval($_GET['id']);
 
-        // Llamar a la función para obtener el producto por ID
         $producto = obtenerProductoById($productId);
 
         if ($producto) {
             http_response_code(200);
-            echo json_encode($producto); // Retornar el primer producto encontrado
+            echo json_encode($producto);
         } else {
             http_response_code(404);
             echo json_encode(["error" => "Producto no encontrado"]);
