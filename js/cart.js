@@ -1,33 +1,34 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const cartItemsContainer = document.getElementById("cart-items");
-    const cartTotalContainer = document.getElementById("cart-total");
-    const checkoutButton = document.getElementById("checkout-button");
+  const cartItemsContainer = document.getElementById("cart-items");
+  const cartTotalContainer = document.getElementById("cart-total");
+  const checkoutButton = document.getElementById("checkout-button");
+  let cartId;
 
  
-    const renderCart = async () => {
-        cartItemsContainer.innerHTML = "";
-        const response = await fetch("backend/cart-item.php", {
-            credentials: 'include'
-        });
-        if (response.ok) {
-            if (response.status !== 200) {
-                // improve alerts
-                alert("please log in if you want to see your cart");
-                return;
-            }
-            const cartInfo = await response.json();
-            const counterElement = document.getElementById("cart-count");
-            counterElement.textContent = cartInfo.items.length;
-
-            cartInfo.items.forEach((product) => {
-                const productElement = document.createElement("tr");
-                productElement.innerHTML = `
+  const renderCart = async () => {
+    cartItemsContainer.innerHTML = "";
+    const response = await fetch("backend/cart-item.php", {
+      credentials: 'include'
+    });
+    if (response.ok) {
+      if (response.status !== 200) {
+        // improve alerts
+        alert("please log in if you want to see your cart");
+        return;
+      }
+      const cartInfo = await response.json();
+      const counterElement = document.getElementById("cart-count");
+      counterElement.textContent = cartInfo.items.length;
+      cartId = cartInfo.cart.id;
+      cartInfo.items.forEach((product) => {
+        const productElement = document.createElement("tr");
+        productElement.innerHTML = `
                     <td><img src="${product.product_image}" alt="${product.product_description}" class="cart-item-image" style="width: 100px; height: 100px; object-fit: cover;"></td>
                     <td>${product.product_name}</td>
                     <td>${product.product_price}</td>
                     <td><button class="btn btn-danger remove-item" data-index="${product.cart_item_id}">Eliminar</button></td>
                 `;
-                cartItemsContainer.appendChild(productElement);
+        cartItemsContainer.appendChild(productElement);
 
             });
             console.log(cartInfo.items);
@@ -96,9 +97,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    checkoutButton.addEventListener("click", function () {
-        alert("Procediendo al pago...");
+  checkoutButton.addEventListener("click", async () => {
+    console.log({ cart_id: cartId });
+    const response = await fetch("backend/invoice.php", {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      credentials: 'include',
+      method: 'POST',
+      body: new URLSearchParams({ cart_id: cartId })
     });
+    if (response.ok) {
+      const result = await response.json();
+      console.log(result);
+    } else {
 
-    await renderCart();
+    }
+  });
+
+  await renderCart();
 });
