@@ -3,6 +3,78 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cartTotalContainer = document.getElementById("cart-total");
   const checkoutButton = document.getElementById("checkout-button");
   let cartId;
+  let isLoading;
+
+  const deleteItem = (btn) => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      let target = e.target;
+      while (target && !target.dataset.id) {
+        target = target.parentElement;
+      }
+
+      const id = target.dataset.id;
+      if (!id) {
+        alert("No se pudo borrar el producto, favor refrescar la pagina.");
+        return;
+      }
+      const response = await fetch("http://localhost:3000/backend/cart-item.php", {
+        credentials: 'include',
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id }) // en json se envia el id
+      });
+      if (response.ok) {
+        await renderCart(); // Recargar el carrito después de eliminar el producto
+        await window.refreshCartCount();
+        renderSuccess("Producto eliminado del carrito.");
+
+      } else {
+        alert("Error eliminando el producto del carrito.");
+      }
+
+
+    });
+  };
+
+  const updateQuantity = (btn) => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      let target = e.target;
+      while (target && !target.dataset.id) {
+        target = target.parentElement;
+      }
+
+      const { id, stock, quantity } = target.dataset;
+      if (Number(stock) < Number(quantity) || Number(quantity) <= 0) return;
+      if (!id) {
+        alert("No se pudo borrar el producto, favor refrescar la pagina.");
+        return;
+      }
+      const response = await fetch("http://localhost:3000/backend/cart-item.php", {
+        credentials: 'include',
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id, quantity })
+      });
+      if (response.ok) {
+        await renderCart(); // Recargar el carrito después de eliminar el producto
+        await window.refreshCartCount();
+        renderSuccess("Producto eliminado del carrito.");
+
+      } else {
+        alert("Error eliminando el producto del carrito.");
+      }
+
+
+    });
+  };
 
 
   const renderCart = async () => {
@@ -26,50 +98,31 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <td><img src="${product.product_image}" alt="${product.product_description}" class="cart-item-image" style="width: 100px; height: 100px; object-fit: cover;"></td>
                     <td>${product.product_name}</td>
                     <td>${product.product_price}</td>
-                    <td><button class="btn btn-danger remove-item" data-index="${product.cart_item_id}">Eliminar</button></td>
+                    <td>
+                      <button class="btn ${product.quantity > 1 ? 'btn-primary' : 'btn-secondary'} substract-one" data-stock="${product.stock}" data-quantity="${product.quantity - 1}" data-id="${product.cart_item_id}">
+                        <i class="fa-solid fa-minus"></i>
+                      </button>
+                      <span style="font-weight: bold; margin: 0 4px;"> ${product.quantity} </span>
+                      <button class="btn ${product.quantity >= product.stock ? 'btn-secondary' : 'btn-primary'} add-one" data-stock="${product.stock}" data-quantity="${product.quantity + 1}" data-id="${product.cart_item_id}">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                      <button class="btn btn-danger remove-item" data-id="${product.cart_item_id}">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </td>
                 `;
         cartItemsContainer.appendChild(productElement);
-
       });
-      console.log(cartInfo.items);
       cartTotalContainer.innerHTML = `<h3>Total: $${cartInfo.items.reduce((accumulator, p) => accumulator + Number(p.product_price), 0)}</h3>`;
-      document.querySelectorAll(".remove-item").forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.preventDefault();
-          const id = e.target.dataset.index;
-          if (!id) {
-            alert("No se pudo borrar el producto, favor refrescar la pagina.");
-            return;
-          }
-          const response = await fetch("http://localhost:3000/backend/cart-item.php", {
-            credentials: 'include',
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            // body: { id }
-            body: JSON.stringify({ id }) // en json se envia el id
-          });
-          console.log(response);
-          if (response.ok) {
-            await renderCart(); // Recargar el carrito después de eliminar el producto
-            await window.refreshCartCount();
-            renderSuccess("Producto eliminado del carrito.");
+      document.querySelectorAll(".substract-one").forEach(updateQuantity);
+      document.querySelectorAll(".add-one").forEach(updateQuantity);
+      document.querySelectorAll(".remove-item").forEach(deleteItem);
 
-          } else {
-            alert("Error eliminando el producto del carrito.");
-          }
-
-
-        });
-      });
     } else {
       // improve alerts
       alert("oops something went wrong loading your current cart");
     }
   };
-
-
 
   async function renderSuccess(message) {
     // Selecciona el contenedor donde se mostrará el mensaje
@@ -98,7 +151,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   checkoutButton.addEventListener("click", async () => {
-    console.log({ cart_id: cartId });
     const response = await fetch("backend/invoice.php", {
       'Content-Type': 'application/x-www-form-urlencoded',
       credentials: 'include',
