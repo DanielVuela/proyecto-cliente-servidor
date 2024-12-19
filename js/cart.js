@@ -88,10 +88,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         alert("please log in if you want to see your cart");
         return;
       }
+
+
+
       const cartInfo = await response.json();
       const counterElement = document.getElementById("cart-count");
+      cartId = cartInfo?.cart?.id;
+
+      if (!cartInfo || !cartInfo.items || !Array.isArray(cartInfo.items) || cartInfo.items.length === 0) {
+        const tableElement = document.getElementById("cart-table");
+        checkoutButton.classList.add("d-none");
+        tableElement.classList.add("d-none");
+        document.getElementById('cart-container').innerHTML = '<img src="img/nodata_4x.png" alt="No se encontraron resultados" style="height = 70%; max-width: 100%;"></img>';
+
+        return;
+      }
+
       counterElement.textContent = cartInfo.items.length;
-      cartId = cartInfo.cart.id;
       cartInfo.items.forEach((product) => {
         const productElement = document.createElement("tr");
         productElement.innerHTML = `
@@ -139,8 +152,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Agrega el mensaje al contenedor
     container.appendChild(alertDiv);
-    //   await renderCart(); // Recargar el carrito después de eliminar el producto
-    //   await   window.refreshCartCount();
     // Elimina la notificación automáticamente después de 3 segundos
     setTimeout(() => {
       alertDiv.classList.remove('show');

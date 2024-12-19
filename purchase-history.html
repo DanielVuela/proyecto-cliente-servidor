@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrito de Compras</title>
+  <title>Historial de Compras</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
@@ -20,27 +20,15 @@
 
 <body>
   <!-- Navegacion -->
-  <div id="header-container"></div> 
+  <div id="header-container"></div>
 
-  <div id="cart-container" class="container mt-2">
-    <h2 style="margin-top: 70px; margin-left: 0px;">Carrito de Compras</h2>
-    <table id="cart-table" class="table">
-      <thead>
-        <tr>
-          <th>Imagen</th>
-          <th>Nombre</th>
-          <th>Precio</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="cart-items"></tbody>
-    </table>
-    <div id="cart-total"></div>
-    <button id="checkout-button" class="btn btn-primary">Proceder al Pago</button>
+  <div class="container mt-5">
+    <h2 style="margin: 40px 0px;">Historial de Compras</h2>
+    <div id="purchase-history-items"></div>
   </div>
 
   <script src="/js/nav-bar.js"></script>
-  <script src="/js/cart.js"></script>
+  <script src="/js/purchase-history.js"></script>
 </body>
 
 </html>
