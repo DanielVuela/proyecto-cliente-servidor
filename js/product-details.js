@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const result = await response.json();
-        console.log(result);
+        console.log(result); 
         if (response.ok) {
             wasSubmit = true;
             button.textContent = "Thanks :)"
@@ -151,7 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // TODO: alerts
             // TODO: counter
         } else {
-            alert("Item no se pudo agregar"); // error 500
+            container.innerHTML = `<div class="alert alert-danger">Item no se pudo agregar</div>`;
+
+          //  alert("Item no se pudo agregar"); // error 500
             // loginError.style.display = 'block';
             // loginError.textContent = result.error || 'Invalid username/password';
         }

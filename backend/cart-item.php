@@ -64,6 +64,17 @@ function obtenerItemsDelCarrito($cart_id)
 
 session_start();
 
+$method = $_SERVER['REQUEST_METHOD'];
+header('Content-Type: application/json');
+
+$method = $_SERVER['REQUEST_METHOD'];
+header('Content-Type: application/json');
+
+function getJsonInput()
+{
+    return json_decode(file_get_contents("php://input"), true);
+}
+
 if (isset($_SESSION['user_id'])) {
   $user_id = $_SESSION['user_id'];
   $method = $_SERVER['REQUEST_METHOD'];
