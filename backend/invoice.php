@@ -27,7 +27,7 @@ function checkout($cart_id, $user_id)
     $stmt = $pdo->prepare(query: $sql);
     $stmt->execute(params: ['cart_id' => $cart_id]);
     $cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    logDebug("got cart items");
+
     if (empty($cart_items)) {
       throw new Exception("El carrito está vacío o no existe.");
     }
@@ -57,6 +57,7 @@ function checkout($cart_id, $user_id)
         'quantity' => $item['quantity'],
         'subtotal' => $item['product_price'] * $item['quantity']
       ]);
+      $pdo->prepare("UPDATE products SET stock = stock - :quantity WHERE id = :product_id") -> execute(['product_id' => $item["product_id"], 'quantity' => $item["quantity"]]);
     }
 
     $pdo->prepare("DELETE FROM cart_item WHERE cart_id = :cart_id")->execute(['cart_id' => $cart_id]);

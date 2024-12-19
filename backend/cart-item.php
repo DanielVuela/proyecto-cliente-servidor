@@ -21,11 +21,32 @@ function eliminarItemDelCarrito($cart_item_id)
 function agregarItemAlCarrito($cart_id, $product_id, $quantity)
 {
   global $pdo;
+  $items = obtenerItemsDelCarrito($cart_id);
+
+  $found = array_filter($items, callback: function ($product) use ($product_id) {
+    return $product['product_id'] == $product_id;
+  });
+
   try {
-    $sql = "INSERT INTO cart_item (cart_id, product_id, quantity) VALUES (:cart_id, :product_id, :quantity)
+    $sql = !empty($found) ?  "UPDATE cart_item SET quantity = :quantity WHERE product_id = :product_id AND cart_id = :cart_id"
+      : "INSERT INTO cart_item (cart_id, product_id, quantity) VALUES (:cart_id, :product_id, :quantity)
                 ON DUPLICATE KEY UPDATE quantity = quantity + :quantity";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['cart_id' => $cart_id, 'product_id' => $product_id, 'quantity' => $quantity]);
+    return $stmt->rowCount() > 0;
+  } catch (Exception $e) {
+    logError("Error al agregar item: " . $e->getMessage());
+    return false;
+  }
+}
+
+function actualizarCantidadEnCarrito($item_id, $quantity)
+{
+  global $pdo;
+  try {
+    $sql = "UPDATE cart_item SET quantity = :quantity WHERE id = :item_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['item_id' => $item_id, 'quantity' => $quantity]);
     return $stmt->rowCount() > 0;
   } catch (Exception $e) {
     logError("Error al agregar item: " . $e->getMessage());
@@ -46,7 +67,8 @@ function obtenerItemsDelCarrito($cart_id)
         p.name AS product_name,
         p.description AS product_description,
         sum(ci.quantity * p.price) AS product_price,
-        p.image_url AS product_image
+        p.image_url AS product_image,
+        p.stock
       FROM cart_item ci
       JOIN products p ON ci.product_id = p.id
       WHERE ci.cart_id = :cart_id GROUP BY ci.id
@@ -72,7 +94,7 @@ header('Content-Type: application/json');
 
 function getJsonInput()
 {
-    return json_decode(file_get_contents("php://input"), true);
+  return json_decode(file_get_contents("php://input"), true);
 }
 
 if (isset($_SESSION['user_id'])) {
@@ -93,7 +115,6 @@ if (isset($_SESSION['user_id'])) {
 
     case 'POST':
       if (isset($_POST['productId'], $_POST['quantity'])) {
-        logDebug(message: "here " . $_POST['productId'] . " " .  $_POST['quantity']);
         $carrito = obtenerCarritoPorUsuario($user_id);
         if (!$carrito) {
           $carritoId = crearCarrito($user_id);
@@ -122,7 +143,6 @@ if (isset($_SESSION['user_id'])) {
 
     case 'DELETE':
       $input = getJsonInput();
-      logDebug($input['id']);
       if (isset($input['id'])) {
         $carrito = obtenerCarritoPorUsuario($user_id);
         if (!$carrito) {
@@ -131,6 +151,24 @@ if (isset($_SESSION['user_id'])) {
           break;
         }
         $result = eliminarItemDelCarrito($input["id"]);
+        if ($result) {
+          http_response_code(200);
+          echo json_encode(['message' => 'Item eliminado del carrito.']);
+        } else {
+          http_response_code(500);
+          echo json_encode(['error' => 'Error eliminando el item del carrito.']);
+        }
+      } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Datos insuficientes para eliminar el item.']);
+      }
+      break;
+
+    case 'PUT':
+      $input = getJsonInput();
+      if (isset($input['id'], $input['quantity'])) {
+
+        $result = actualizarCantidadEnCarrito($input['id'], $input['quantity']);
         if ($result) {
           http_response_code(200);
           echo json_encode(['message' => 'Item eliminado del carrito.']);
