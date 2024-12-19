@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       const cartInfo = await response.json();
       const counterElement = document.getElementById("cart-count");
-      counterElement.textContent = cartInfo.items.length;
+      if(cartInfo && counterElement)
+        counterElement.textContent = cartInfo.items.length;
       
     } else {
       // improve alerts

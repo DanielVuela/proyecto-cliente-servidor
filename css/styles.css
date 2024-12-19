@@ -154,3 +154,11 @@ header {
 .cart-item-details p {
   margin: 5px 0;
 }
+
+
+.alert {
+  margin-top: 20px;
+  font-size: 1rem;
+  text-align: center;
+  z-index: 1050; /* Asegúrate de que la alerta esté en el frente */
+}
