@@ -46,21 +46,27 @@ header {
   max-height: 60px;
 }
 
-.navbar .cart {
+.navbar .cart, .navbar .history {
   background-color: white;
   padding: 10px;
   border-radius: 10px;
+  margin-right: 10px; /* Reduce el margen derecho */
 }
 
-.navbar .cart a {
+.navbar .cart a, .navbar .history a {
   color: black;
   text-decoration: none;
   display: flex;
   align-items: center;
 }
 
-.navbar .cart a i {
+.navbar .cart a i, .navbar .history a i {
   margin-right: 5px;
+}
+
+.navbar .actions {
+  display: flex;
+  align-items: center;
 }
 
 .product-banner {
