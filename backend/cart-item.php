@@ -4,6 +4,20 @@ require 'db.php';
 require_once 'cart.php';
 require_once "message_log.php";
 
+function eliminarItemDelCarrito($cart_item_id)
+{
+  global $pdo;
+  try {
+    $sql = "DELETE FROM cart_item WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['id' => $cart_item_id]);
+    return $stmt->rowCount() > 0;
+  } catch (Exception $e) {
+    logError("Error al eliminar item: " . $e->getMessage());
+    return false;
+  }
+}
+
 function agregarItemAlCarrito($cart_id, $product_id, $quantity)
 {
   global $pdo;
@@ -23,15 +37,30 @@ function obtenerItemsDelCarrito($cart_id)
 {
   global $pdo;
   try {
-    $sql = "SELECT * FROM cart_item WHERE cart_id = :cart_id";
+    $sql = "
+      SELECT 
+        ci.cart_id,
+        ci.id as cart_item_id,
+        ci.quantity,
+        p.id AS product_id,
+        p.name AS product_name,
+        p.description AS product_description,
+        p.price AS product_price,
+        p.image_url AS product_image
+      FROM cart_item ci
+      JOIN products p ON ci.product_id = p.id
+      WHERE ci.cart_id = :cart_id
+    ";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['cart_id' => $cart_id]);
+    $stmt->execute(params: ['cart_id' => $cart_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   } catch (Exception $e) {
     logError("Error obteniendo items: " . $e->getMessage());
     return [];
   }
 }
+
+
 
 session_start();
 
@@ -78,6 +107,30 @@ if (isset($_SESSION['user_id'])) {
       } else {
         http_response_code(400);
         echo json_encode(['error' => 'Datos insuficientes.']);
+      }
+      break;
+
+    case 'DELETE':
+      $input = getJsonInput();
+      logDebug($input['id']);
+      if (isset($input['id'])) {
+        $carrito = obtenerCarritoPorUsuario($user_id);
+        if (!$carrito) {
+          http_response_code(404);
+          echo json_encode(['error' => 'Carrito no encontrado.']);
+          break;
+        }
+        $result = eliminarItemDelCarrito($input["id"]);
+        if ($result) {
+          http_response_code(200);
+          echo json_encode(['message' => 'Item eliminado del carrito.']);
+        } else {
+          http_response_code(500);
+          echo json_encode(['error' => 'Error eliminando el item del carrito.']);
+        }
+      } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Datos insuficientes para eliminar el item.']);
       }
       break;
 
